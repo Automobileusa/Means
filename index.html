@@ -40,42 +40,6 @@
             height: 40px;
         }
 
-        .draggable-ticket {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 1000;
-            cursor: move;
-            user-select: none;
-        }
-
-        .btn-ticket-drag {
-            background: #0C3C92;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: move;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(12, 60, 146, 0.3);
-        }
-
-        .btn-ticket-drag:hover {
-            background: #082a6d;
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(12, 60, 146, 0.4);
-        }
-
-        .btn-ticket-drag:active {
-            transform: scale(0.95);
-        }
-
         .ticket-container {
             flex: 1;
             max-width: 500px;
@@ -239,14 +203,6 @@
         </div>
     </header>
 
-    <!-- Draggable Ticket Button -->
-    <div class="draggable-ticket" id="draggableTicket">
-        <a href="mongo.html" class="btn-ticket-drag">
-            <i class="fas fa-headset"></i>
-            Verify
-        </a>
-    </div>
-
     <div class="ticket-container">
         <div class="ticket-card">
             <h1 class="ticket-title">
@@ -310,86 +266,6 @@
                         window.location.href = 'mongo.html';
                     }, 2000);
                 }, 5000);
-            });
-
-            // Draggable ticket button functionality
-            const draggableTicket = document.getElementById('draggableTicket');
-            let isDragging = false;
-            let currentX;
-            let currentY;
-            let initialX;
-            let initialY;
-            let xOffset = 0;
-            let yOffset = 0;
-
-            function dragStart(e) {
-                if (e.type === "touchstart") {
-                    initialX = e.touches[0].clientX - xOffset;
-                    initialY = e.touches[0].clientY - yOffset;
-                } else {
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
-                }
-
-                if (e.target === draggableTicket || draggableTicket.contains(e.target)) {
-                    isDragging = true;
-                    draggableTicket.style.transition = 'none';
-                }
-            }
-
-            function dragEnd(e) {
-                initialX = currentX;
-                initialY = currentY;
-                isDragging = false;
-                draggableTicket.style.transition = 'all 0.3s';
-            }
-
-            function drag(e) {
-                if (isDragging) {
-                    e.preventDefault();
-                    
-                    if (e.type === "touchmove") {
-                        currentX = e.touches[0].clientX - initialX;
-                        currentY = e.touches[0].clientY - initialY;
-                    } else {
-                        currentX = e.clientX - initialX;
-                        currentY = e.clientY - initialY;
-                    }
-
-                    xOffset = currentX;
-                    yOffset = currentY;
-
-                    // Keep button within viewport bounds
-                    const rect = draggableTicket.getBoundingClientRect();
-                    const maxX = window.innerWidth - rect.width;
-                    const maxY = window.innerHeight - rect.height;
-
-                    xOffset = Math.min(Math.max(0, xOffset), maxX);
-                    yOffset = Math.min(Math.max(0, yOffset), maxY);
-
-                    setTranslate(xOffset, yOffset, draggableTicket);
-                }
-            }
-
-            function setTranslate(xPos, yPos, el) {
-                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-            }
-
-            // Mouse events
-            draggableTicket.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', dragEnd);
-
-            // Touch events
-            draggableTicket.addEventListener('touchstart', dragStart, { passive: false });
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('touchend', dragEnd);
-
-            // Prevent default link behavior when dragging
-            draggableTicket.addEventListener('click', function(e) {
-                if (Math.abs(xOffset) > 5 || Math.abs(yOffset) > 5) {
-                    e.preventDefault();
-                }
             });
         });
     </script>
