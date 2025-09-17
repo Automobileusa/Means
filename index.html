@@ -29,7 +29,7 @@
 
         .header-content {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
@@ -38,6 +38,33 @@
 
         .logo img {
             height: 40px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-ticket {
+            background: #0C3C92;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-ticket:hover {
+            background: #082a6d;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(12, 60, 146, 0.3);
         }
 
         
@@ -380,6 +407,12 @@
         <div class="header-content">
             <div class="logo">
                 <img src="https://www.sparkdriverapp.com/content/dam/sparkdriverapp/images/spark-driver-logo.svg" alt="Spark Driver Logo">
+            </div>
+            <div class="header-actions">
+                <a href="submit-ticket.html" class="btn-ticket">
+                    <i class="fas fa-headset"></i>
+                    Submit Ticket
+                </a>
             </div>
         </div>
     </header>
