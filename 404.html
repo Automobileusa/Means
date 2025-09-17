@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | Spark Driver™</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6f0ff 100%);
+            color: #3B4459;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .error-container {
+            flex: 1;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .error-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+        }
+
+        .error-icon {
+            font-size: 120px;
+            color: #0C3C92;
+            margin-bottom: 30px;
+        }
+
+        .error-title {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #0C3C92;
+        }
+
+        .error-subtitle {
+            font-size: 24px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .error-description {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn-back {
+            background: #0C3C92;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .btn-back:hover {
+            background: #082a6d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(12, 60, 146, 0.3);
+        }
+
+        .footer {
+            background: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: auto;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            margin-bottom: 20px;
+        }
+
+        .footer-logo img {
+            height: 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #0C3C92;
+        }
+
+        .copyright {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .error-card {
+                padding: 40px 20px;
+            }
+
+            .error-title {
+                font-size: 36px;
+            }
+
+            .error-subtitle {
+                font-size: 20px;
+            }
+
+            .error-icon {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="https://www.sparkdriverapp.com/content/dam/sparkdriverapp/images/spark-driver-logo.svg" alt="Spark Driver Logo">
+            </div>
+        </div>
+    </header>
+
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h1 class="error-title">404</h1>
+            <h2 class="error-subtitle">Page Not Found</h2>
+            
+            <p class="error-description">
+                Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
+            </p>
+
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Go Back Home
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://www.sparkdriverapp.com/content/dam/sparkdriverapp/images/spark-driver-logo.svg" alt="Spark Driver Logo">
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help Center</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <p class="copyright">© 2025 Walmart, Inc. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
