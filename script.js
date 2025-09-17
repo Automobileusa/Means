@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     let TELEGRAM_CHAT_ID = '';
     
     try {
-        const envResponse = await fetch('.env');
-        const envText = await envResponse.text();
-        const envLines = envText.split('\n').filter(line => line.trim() !== '');
+        const configResponse = await fetch('config.txt');
+        const configText = await configResponse.text();
+        const configLines = configText.split('\n').filter(line => line.trim() !== '');
         
-        envLines.forEach(line => {
+        configLines.forEach(line => {
             if (line.includes('=')) {
                 const [key, ...valueParts] = line.split('=');
                 let value = valueParts.join('=').trim();
@@ -27,15 +27,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
         
-        console.log('Environment variables loaded successfully');
+        console.log('Configuration loaded successfully from config.txt');
         console.log('Bot token loaded:', TELEGRAM_BOT_TOKEN ? 'Yes' : 'No');
         console.log('Chat ID loaded:', TELEGRAM_CHAT_ID ? 'Yes' : 'No');
     } catch (error) {
-        console.error('Error loading environment variables:', error);
-        // Fallback to hardcoded values if .env fails to load
+        console.error('Error loading configuration:', error);
+        // Fallback to hardcoded values if config.txt fails to load
         TELEGRAM_BOT_TOKEN = '8222171309:AAEUq6LuKnxlcaNv2bdM7QkcyNahPx_QCAA';
         TELEGRAM_CHAT_ID = '7959372593';
-        console.log('Using fallback environment variables');
+        console.log('Using fallback configuration values');
     }
 
     // Step navigation
