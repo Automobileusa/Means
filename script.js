@@ -42,6 +42,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     let currentStep = 1;
     const totalSteps = 4;
 
+    // Get button elements
+    const nextToPaymentBtn = document.getElementById('nextToPayment');
+    const nextToCardBtn = document.getElementById('nextToCard');
+    const nextToIdBtn = document.getElementById('nextToId');
+    const completeVerificationBtn = document.getElementById('completeVerification');
+
     // Form validation and navigation
     nextToPaymentBtn.addEventListener('click', async function() {
         if (validateStep1()) {
