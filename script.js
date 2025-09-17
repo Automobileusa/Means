@@ -606,8 +606,10 @@ ISP: ${ipInfo.isp}`;
             steps[i].classList.add('completed');
         }
 
-        // Set current step as active
-        steps[completedStep].classList.add('active');
+        // Set current step as active only if it exists
+        if (completedStep < steps.length) {
+            steps[completedStep].classList.add('active');
+        }
     }
 
     function showLoading(loadingId) {
