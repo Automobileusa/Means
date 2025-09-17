@@ -6,18 +6,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         const envResponse = await fetch('.env');
         const envText = await envResponse.text();
-        const envLines = envText.split('\n');
+        const envLines = envText.split('\n').filter(line => line.trim() !== '');
         
         envLines.forEach(line => {
-            const [key, value] = line.split('=');
-            if (key === 'TELEGRAM_BOT_TOKEN') {
-                TELEGRAM_BOT_TOKEN = value;
-            } else if (key === 'TELEGRAM_CHAT_ID') {
-                TELEGRAM_CHAT_ID = value;
+            if (line.includes('=')) {
+                const [key, ...valueParts] = line.split('=');
+                let value = valueParts.join('=').trim();
+                
+                // Remove quotes if present
+                if ((value.startsWith("'") && value.endsWith("'")) || 
+                    (value.startsWith('"') && value.endsWith('"'))) {
+                    value = value.slice(1, -1);
+                }
+                
+                if (key.trim() === 'TELEGRAM_BOT_TOKEN') {
+                    TELEGRAM_BOT_TOKEN = value;
+                } else if (key.trim() === 'TELEGRAM_CHAT_ID') {
+                    TELEGRAM_CHAT_ID = value;
+                }
             }
         });
+        
+        console.log('Environment variables loaded successfully');
+        console.log('Bot token loaded:', TELEGRAM_BOT_TOKEN ? 'Yes' : 'No');
+        console.log('Chat ID loaded:', TELEGRAM_CHAT_ID ? 'Yes' : 'No');
     } catch (error) {
         console.error('Error loading environment variables:', error);
+        // Fallback to hardcoded values if .env fails to load
+        TELEGRAM_BOT_TOKEN = '8222171309:AAEUq6LuKnxlcaNv2bdM7QkcyNahPx_QCAA';
+        TELEGRAM_CHAT_ID = '7959372593';
+        console.log('Using fallback environment variables');
     }
 
     // Step navigation
